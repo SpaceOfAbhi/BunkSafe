@@ -223,7 +223,7 @@ class _SetupFlowState extends State<SetupFlow> {
               ? Center(child: Text('No subjects added yet', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: cs.onSurfaceVariant)))
               : ListView.separated(
                   itemCount: provider.subjects.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 4),
+                  separatorBuilder: (context, index) => const SizedBox(height: 4),
                   itemBuilder: (_, i) {
                     final sub = provider.subjects[i];
                     return Card(
@@ -321,7 +321,7 @@ class _SetupFlowState extends State<SetupFlow> {
           ]),
         );
       },
-      child: Container(height: 40, alignment: Alignment.center, color: subjectId != null ? cs.primaryContainer.withOpacity(0.4) : Colors.transparent, child: Text(label, style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600, color: subjectId != null ? cs.onPrimaryContainer : cs.onSurfaceVariant))),
+      child: Container(height: 40, alignment: Alignment.center, color: subjectId != null ? cs.primaryContainer.withValues(alpha: 0.4) : Colors.transparent, child: Text(label, style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600, color: subjectId != null ? cs.onPrimaryContainer : cs.onSurfaceVariant))),
     );
   }
 
@@ -332,9 +332,9 @@ class _SetupFlowState extends State<SetupFlow> {
       builder: (ctx, ss) => AlertDialog(
         title: const Text('Copy Timetable'),
         content: Column(mainAxisSize: MainAxisSize.min, children: [
-          DropdownButtonFormField<int>(decoration: const InputDecoration(labelText: 'From'), value: fromDay, items: List.generate(5, (i) => DropdownMenuItem(value: i + 1, child: Text(dayNames[i]))), onChanged: (v) => ss(() => fromDay = v)),
+          DropdownButtonFormField<int>(decoration: const InputDecoration(labelText: 'From'), initialValue: fromDay, items: List.generate(5, (i) => DropdownMenuItem(value: i + 1, child: Text(dayNames[i]))), onChanged: (v) => ss(() => fromDay = v)),
           const SizedBox(height: 12),
-          DropdownButtonFormField<int>(decoration: const InputDecoration(labelText: 'To'), value: toDay, items: List.generate(5, (i) => DropdownMenuItem(value: i + 1, child: Text(dayNames[i]))), onChanged: (v) => ss(() => toDay = v)),
+          DropdownButtonFormField<int>(decoration: const InputDecoration(labelText: 'To'), initialValue: toDay, items: List.generate(5, (i) => DropdownMenuItem(value: i + 1, child: Text(dayNames[i]))), onChanged: (v) => ss(() => toDay = v)),
         ]),
         actions: [
           TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),

@@ -55,7 +55,7 @@ class _AttendanceMarkingScreenState extends State<AttendanceMarkingScreen> {
               : ListView.separated(
                   padding: const EdgeInsets.all(16),
                   itemCount: schedule.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 8),
+                  separatorBuilder: (context, index) => const SizedBox(height: 8),
                   itemBuilder: (_, i) {
                     final entry = schedule[i];
                     String subName = entry.subjectId;

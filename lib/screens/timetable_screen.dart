@@ -138,9 +138,9 @@ class _TimetableScreenState extends State<TimetableScreen> with SingleTickerProv
       builder: (ctx, ss) => AlertDialog(
         title: const Text('Copy Timetable'),
         content: Column(mainAxisSize: MainAxisSize.min, children: [
-          DropdownButtonFormField<int>(decoration: const InputDecoration(labelText: 'From'), value: fromDay, items: List.generate(5, (i) => DropdownMenuItem(value: i + 1, child: Text(_dayNames[i]))), onChanged: (v) => ss(() => fromDay = v)),
+          DropdownButtonFormField<int>(decoration: const InputDecoration(labelText: 'From'), initialValue: fromDay, items: List.generate(5, (i) => DropdownMenuItem(value: i + 1, child: Text(_dayNames[i]))), onChanged: (v) => ss(() => fromDay = v)),
           const SizedBox(height: 12),
-          DropdownButtonFormField<int>(decoration: const InputDecoration(labelText: 'To'), value: toDay, items: List.generate(5, (i) => DropdownMenuItem(value: i + 1, child: Text(_dayNames[i]))), onChanged: (v) => ss(() => toDay = v)),
+          DropdownButtonFormField<int>(decoration: const InputDecoration(labelText: 'To'), initialValue: toDay, items: List.generate(5, (i) => DropdownMenuItem(value: i + 1, child: Text(_dayNames[i]))), onChanged: (v) => ss(() => toDay = v)),
         ]),
         actions: [
           TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),

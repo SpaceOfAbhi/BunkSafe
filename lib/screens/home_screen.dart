@@ -134,7 +134,7 @@ class _DashboardTab extends StatelessWidget {
         // Subject list
         SliverList.separated(
           itemCount: subjects.length,
-          separatorBuilder: (_, __) => const SizedBox(height: 2),
+          separatorBuilder: (context, index) => const SizedBox(height: 2),
           itemBuilder: (_, i) {
             final sub = subjects[i];
             final pct = calc.attendancePercentage(sub.id);

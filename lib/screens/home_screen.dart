@@ -57,8 +57,9 @@ class _DashboardTab extends StatelessWidget {
 
     return CustomScrollView(
       slivers: [
-        SliverAppBar.large(
+        SliverAppBar(
           title: const Text('KTU Companion'),
+          floating: true,
         ),
         SliverToBoxAdapter(
           child: Padding(
@@ -132,44 +133,53 @@ class _DashboardTab extends StatelessWidget {
           ),
         ),
         // Subject list
-        SliverList.separated(
-          itemCount: subjects.length,
-          separatorBuilder: (context, index) => const SizedBox(height: 2),
-          itemBuilder: (_, i) {
-            final sub = subjects[i];
-            final pct = calc.attendancePercentage(sub.id);
-            final attended = calc.totalAttended(sub.id);
-            final total = calc.totalConducted(sub.id);
-            final bunks = calc.safeBunks(sub.id, provider.targetAttendance);
-            final isLow = pct < provider.targetAttendance && total > 0;
+        if (subjects.isEmpty)
+          const SliverToBoxAdapter(
+            child: Padding(
+              padding: EdgeInsets.all(32.0),
+              child: Center(child: Text('No subjects added yet. Go to Settings to add subjects.')),
+            ),
+          )
+        else
+          SliverList.builder(
+            itemCount: subjects.length * 2 - 1,
+            itemBuilder: (_, index) {
+              if (index.isOdd) return const SizedBox(height: 2);
+              final i = index ~/ 2;
+              final sub = subjects[i];
+              final pct = calc.attendancePercentage(sub.id);
+              final attended = calc.totalAttended(sub.id);
+              final total = calc.totalConducted(sub.id);
+              final bunks = calc.safeBunks(sub.id, provider.targetAttendance);
+              final isLow = pct < provider.targetAttendance && total > 0;
 
-            return Card(
-              child: ListTile(
-                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => SubjectDetailScreen(subject: sub))),
-                leading: CircleAvatar(
-                  radius: 20,
-                  backgroundColor: isLow ? cs.errorContainer : cs.secondaryContainer,
-                  child: Text(sub.shortCode.substring(0, sub.shortCode.length.clamp(0, 2)),
-                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: isLow ? cs.onErrorContainer : cs.onSecondaryContainer)),
+              return Card(
+                child: ListTile(
+                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => SubjectDetailScreen(subject: sub))),
+                  leading: CircleAvatar(
+                    radius: 20,
+                    backgroundColor: isLow ? cs.errorContainer : cs.secondaryContainer,
+                    child: Text(sub.shortCode.substring(0, sub.shortCode.length.clamp(0, 2)),
+                      style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: isLow ? cs.onErrorContainer : cs.onSecondaryContainer)),
+                  ),
+                  title: Text(sub.name, style: const TextStyle(fontWeight: FontWeight.w500)),
+                  subtitle: Wrap(
+                    spacing: 8,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      Text('$attended/$total classes', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant)),
+                      if (bunks > 0 && total > 0)
+                        Text('$bunks bunks left', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: cs.primary, fontWeight: FontWeight.w500))
+                      else if (bunks < 0 && total > 0)
+                        Text('need ${bunks.abs()}', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: cs.error, fontWeight: FontWeight.w500)),
+                    ],
+                  ),
+                  trailing: Text('${pct.toStringAsFixed(0)}%',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700, color: isLow ? cs.error : cs.onSurface)),
                 ),
-                title: Text(sub.name, style: const TextStyle(fontWeight: FontWeight.w500)),
-                subtitle: Wrap(
-                  spacing: 8,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: [
-                    Text('$attended/$total classes', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant)),
-                    if (bunks > 0 && total > 0)
-                      Text('$bunks bunks left', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: cs.primary, fontWeight: FontWeight.w500))
-                    else if (bunks < 0 && total > 0)
-                      Text('need ${bunks.abs()}', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: cs.error, fontWeight: FontWeight.w500)),
-                  ],
-                ),
-                trailing: Text('${pct.toStringAsFixed(0)}%',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700, color: isLow ? cs.error : cs.onSurface)),
-              ),
-            );
-          },
-        ),
+              );
+            },
+          ),
         const SliverToBoxAdapter(child: SizedBox(height: 80)),
       ],
     );

@@ -93,12 +93,15 @@ class AttendanceCalculator {
     if (end == null) return 0;
 
     final today = DateTime.now();
-    if (today.isAfter(end)) return 0;
+    final todayDate = DateTime(today.year, today.month, today.day);
+    final endDate = DateTime(end.year, end.month, end.day);
+
+    if (todayDate.isAfter(endDate)) return 0;
 
     int count = 0;
-    DateTime d = today.add(const Duration(days: 1));
+    DateTime d = todayDate.add(const Duration(days: 1));
 
-    while (!d.isAfter(end)) {
+    while (!d.isAfter(endDate)) {
       int effectiveDay = d.weekday;
 
       if (d.weekday == 6) {
@@ -142,8 +145,8 @@ class AttendanceCalculator {
     final required = (targetPercent * totalFuture / 100).ceil() - attended;
 
     if (required < 0) {
-      // Already above target, can bunk all remaining + surplus
-      return remaining + required.abs();
+      // Already above target, can bunk all remaining
+      return remaining;
     }
 
     // Bunks remaining = remaining - required

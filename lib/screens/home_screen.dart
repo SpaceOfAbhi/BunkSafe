@@ -99,7 +99,7 @@ class _DashboardTab extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               // Quick mark today
-              if (!provider.hasAttendanceForDate(DateTime.now()) && _isTodayWeekday())
+              if (!provider.hasAttendanceForDate(DateTime.now()) && provider.calculator.getScheduleForDate(DateTime.now()).isNotEmpty)
                 Card(
                   margin: const EdgeInsets.only(top: 8),
                   child: ListTile(
@@ -153,16 +153,17 @@ class _DashboardTab extends StatelessWidget {
                     style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: isLow ? cs.onErrorContainer : cs.onSecondaryContainer)),
                 ),
                 title: Text(sub.name, style: const TextStyle(fontWeight: FontWeight.w500)),
-                subtitle: Row(children: [
-                  Text('$attended/$total classes', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant)),
-                  if (bunks > 0 && total > 0) ...[
-                    const SizedBox(width: 8),
-                    Text('$bunks bunks left', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: cs.primary, fontWeight: FontWeight.w500)),
-                  ] else if (bunks < 0 && total > 0) ...[
-                    const SizedBox(width: 8),
-                    Text('need ${bunks.abs()}', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: cs.error, fontWeight: FontWeight.w500)),
+                subtitle: Wrap(
+                  spacing: 8,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    Text('$attended/$total classes', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant)),
+                    if (bunks > 0 && total > 0)
+                      Text('$bunks bunks left', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: cs.primary, fontWeight: FontWeight.w500))
+                    else if (bunks < 0 && total > 0)
+                      Text('need ${bunks.abs()}', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: cs.error, fontWeight: FontWeight.w500)),
                   ],
-                ]),
+                ),
                 trailing: Text('${pct.toStringAsFixed(0)}%',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700, color: isLow ? cs.error : cs.onSurface)),
               ),
@@ -172,10 +173,5 @@ class _DashboardTab extends StatelessWidget {
         const SliverToBoxAdapter(child: SizedBox(height: 80)),
       ],
     );
-  }
-
-  bool _isTodayWeekday() {
-    final wd = DateTime.now().weekday;
-    return wd >= 1 && wd <= 5;
   }
 }

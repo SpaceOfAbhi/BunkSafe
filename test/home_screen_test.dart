@@ -9,9 +9,9 @@ import 'package:classbunk_v1/models/timetable_entry.dart';
 
 class MockCalculator implements AttendanceCalculator {
   @override
-  double overallAttendancePercentage() => double.nan;
+  double overallAttendancePercentage() => 75.0;
   @override
-  double semesterProgress() => double.nan;
+  double semesterProgress() => 0.5;
   @override
   double attendancePercentage(String subjectId) => 80.0;
   @override

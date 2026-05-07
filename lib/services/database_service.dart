@@ -34,12 +34,15 @@ class DatabaseService {
     _subjects = await Hive.openBox<Subject>(_subjectsBox);
     _attendance = await Hive.openBox<AttendanceRecord>(_attendanceBox);
     _timetable = await Hive.openBox<TimetableEntry>(_timetableBox);
-    _workingSaturdays = await Hive.openBox<WorkingSaturday>(_workingSaturdaysBox);
+    _workingSaturdays = await Hive.openBox<WorkingSaturday>(
+      _workingSaturdaysBox,
+    );
   }
 
   // ── Settings ──────────────────────────────────────────────
 
-  bool get isSetupComplete => _settings.get('setupComplete', defaultValue: false);
+  bool get isSetupComplete =>
+      _settings.get('setupComplete', defaultValue: false);
   set isSetupComplete(bool val) => _settings.put('setupComplete', val);
 
   DateTime? get semesterStart {
@@ -58,13 +61,16 @@ class DatabaseService {
   set semesterEnd(DateTime? val) =>
       _settings.put('semesterEnd', val?.millisecondsSinceEpoch);
 
-  int get notificationHour => _settings.get('notificationHour', defaultValue: 20);
+  int get notificationHour =>
+      _settings.get('notificationHour', defaultValue: 20);
   set notificationHour(int val) => _settings.put('notificationHour', val);
 
-  int get notificationMinute => _settings.get('notificationMinute', defaultValue: 0);
+  int get notificationMinute =>
+      _settings.get('notificationMinute', defaultValue: 0);
   set notificationMinute(int val) => _settings.put('notificationMinute', val);
 
-  int get targetAttendance => _settings.get('targetAttendance', defaultValue: 75);
+  int get targetAttendance =>
+      _settings.get('targetAttendance', defaultValue: 75);
   set targetAttendance(int val) => _settings.put('targetAttendance', val);
 
   int get periodsPerDay => _settings.get('periodsPerDay', defaultValue: 5);
@@ -87,12 +93,10 @@ class DatabaseService {
     for (final key in keysToRemove) {
       await _attendance.delete(key);
     }
-    final ttKeysToRemove = _timetable.keys
-        .where((k) {
-          final entry = _timetable.get(k);
-          return entry?.subjectId == id;
-        })
-        .toList();
+    final ttKeysToRemove = _timetable.keys.where((k) {
+      final entry = _timetable.get(k);
+      return entry?.subjectId == id;
+    }).toList();
     for (final key in ttKeysToRemove) {
       await _timetable.delete(key);
     }
@@ -107,9 +111,7 @@ class DatabaseService {
   List<TimetableEntry> get timetableEntries => _timetable.values.toList();
 
   List<TimetableEntry> getEntriesForDay(int dayOfWeek) {
-    return _timetable.values
-        .where((e) => e.dayOfWeek == dayOfWeek)
-        .toList()
+    return _timetable.values.where((e) => e.dayOfWeek == dayOfWeek).toList()
       ..sort((a, b) => a.slotIndex.compareTo(b.slotIndex));
   }
 
@@ -122,8 +124,9 @@ class DatabaseService {
   }
 
   Future<void> clearTimetableForDay(int day) async {
-    final keys =
-        _timetable.keys.where((k) => k.toString().startsWith('${day}_')).toList();
+    final keys = _timetable.keys
+        .where((k) => k.toString().startsWith('${day}_'))
+        .toList();
     for (final key in keys) {
       await _timetable.delete(key);
     }
@@ -144,20 +147,17 @@ class DatabaseService {
 
   // ── Attendance ────────────────────────────────────────────
 
-  List<AttendanceRecord> get allAttendanceRecords => _attendance.values.toList();
+  List<AttendanceRecord> get allAttendanceRecords =>
+      _attendance.values.toList();
 
   List<AttendanceRecord> getRecordsForDate(DateTime date) {
     final prefix =
         '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
-    return _attendance.values
-        .where((r) => r.key.startsWith(prefix))
-        .toList();
+    return _attendance.values.where((r) => r.key.startsWith(prefix)).toList();
   }
 
   List<AttendanceRecord> getRecordsForSubject(String subjectId) {
-    return _attendance.values
-        .where((r) => r.subjectId == subjectId)
-        .toList();
+    return _attendance.values.where((r) => r.subjectId == subjectId).toList();
   }
 
   Future<void> saveAttendanceRecord(AttendanceRecord record) async {
@@ -176,7 +176,8 @@ class DatabaseService {
 
   // ── Working Saturdays ─────────────────────────────────────
 
-  List<WorkingSaturday> get workingSaturdays => _workingSaturdays.values.toList();
+  List<WorkingSaturday> get workingSaturdays =>
+      _workingSaturdays.values.toList();
 
   Future<void> addWorkingSaturday(WorkingSaturday ws) async {
     await _workingSaturdays.put(ws.key, ws);
@@ -218,12 +219,14 @@ class DatabaseService {
     // Settings
     final settings = data['settings'] as Map<String, dynamic>;
     if (settings['semesterStart'] != null) {
-      semesterStart =
-          DateTime.fromMillisecondsSinceEpoch(settings['semesterStart']);
+      semesterStart = DateTime.fromMillisecondsSinceEpoch(
+        settings['semesterStart'],
+      );
     }
     if (settings['semesterEnd'] != null) {
-      semesterEnd =
-          DateTime.fromMillisecondsSinceEpoch(settings['semesterEnd']);
+      semesterEnd = DateTime.fromMillisecondsSinceEpoch(
+        settings['semesterEnd'],
+      );
     }
     notificationHour = settings['notificationHour'] ?? 20;
     notificationMinute = settings['notificationMinute'] ?? 0;
